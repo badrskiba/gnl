@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include "stdio.h"
 
 static t_list			*get_correct_file(t_list **file, int fd)
 {
@@ -89,6 +90,7 @@ int						get_next_line(const int fd, char **line)
 	i = 0;
 	while ((ret = read(fd, buf, BUFF_SIZE)))
 	{
+		printf("%d", ret);
 		buf[ret] = '\0';
 		list->content = (i++ == 0) ? ft_strjoin(list->content, buf)
 			: ft_strjoin1(list->content, buf);
@@ -101,4 +103,38 @@ int						get_next_line(const int fd, char **line)
 	*line = ft_strndup(list->content, i);
 	list->content = list->content + i + 1;
 	return (1);
+}
+
+int main(int ac, char **av)
+{
+	int fd;
+	char *line;
+	char *unused;
+
+	unused = av[0];
+	int i;
+
+	if (ac == 1)
+	{
+		while(get_next_line(0, &line) == 1)
+			{
+				printf("%s\n",line);
+				free(line);
+			}
+	}
+	else
+	{
+		i = 1;
+		while (i < ac)
+		{
+			fd = open(av[i], O_RDONLY);
+			while(get_next_line(fd, &line) == 1)
+			{
+				printf("%s\n",line);
+				free(line);
+			}
+			i++;
+			close(fd);
+		}
+	}
 }
